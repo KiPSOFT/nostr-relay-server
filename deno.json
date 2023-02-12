@@ -1,0 +1,6 @@
+{
+    "importMap": "import_map.json",
+    "tasks": {
+        "build": "deno bundle ./src/server.ts mod.ts"
+    }
+}
