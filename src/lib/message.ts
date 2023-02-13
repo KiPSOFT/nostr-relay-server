@@ -35,7 +35,7 @@ export default class Message {
         this.type = this.data[0] as NostrMessageType;
         this.logger?.debug(`Message type is ${this.data[0]}`);
         switch (this.type) {
-            case NostrMessageType.EVENT:
+            case NostrMessageType.EVENT: {
                 try {
                     const event = JSON.parse(this.data[1]) as NostrEvent;
                     await this.storeEvent(event);
@@ -44,7 +44,8 @@ export default class Message {
                     this.ws.sendNotice(err.message, err.stack);    
                 }
                 break;
-            case NostrMessageType.REQUEST:
+            }
+            case NostrMessageType.REQUEST: {
                 try {
                     const subscriptionId = this.data[1];
                     const filters = JSON.parse(this.data[2]) as Array<NostrFilters>;
@@ -53,6 +54,7 @@ export default class Message {
                     this.ws.sendNotice(err.message, err.stack);    
                 }
                 break;
+            }
         }
         return null;
     }
