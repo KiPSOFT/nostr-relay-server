@@ -38,9 +38,9 @@ export default class Socket extends EventEmitter {
         this.subscriptions.delete({ subscriptionId });
     }
 
-    sendNotice(messsage: string, detail: string) {
-        this.logger?.debug('Error from data parsing; %s', detail);
-        this.ws.send(JSON.stringify(['NOTICE', messsage]));
+    sendNotice(message: string, detail: string) {
+        this.logger?.debug(`Error ${message} ${detail}`);
+        this.ws.send(JSON.stringify(['NOTICE', message]));
     }
 
     sendOk(id: string) {
