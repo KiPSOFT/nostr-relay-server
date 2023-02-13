@@ -33,6 +33,7 @@ export default class Message {
             return this.ws.sendNotice('Message type is incorrect', 'Message type is incorrect;' + this.data[0]);
         }
         this.type = this.data[0] as NostrMessageType;
+        this.logger?.debug(`Message type is ${this.data[0]}`);
         switch (this.type) {
             case NostrMessageType.EVENT:
                 try {
