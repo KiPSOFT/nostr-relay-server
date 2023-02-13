@@ -16,7 +16,7 @@ export default class Socket extends EventEmitter {
         this.ws = _ws;
         this.logger = _logger;
         this.db = _db;
-        this.ws.onmessage = async (m) =>{
+        this.ws.onmessage = async (m) => {
             const msg = new Message(this, m.data, this.logger, this.db);
             const event = await msg.parse();
             if (event) {
