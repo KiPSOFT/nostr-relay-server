@@ -7,7 +7,7 @@ import DB from './db.ts';
 
 export default class Message {
     private ws: Socket;
-    private data: Array<string> = [];
+    private data: Array<any> = [];
     private logger: Logger|undefined;
     private type: NostrMessageType|undefined;
     private db: DB;
@@ -37,13 +37,13 @@ export default class Message {
         switch (this.type) {
             case NostrMessageType.EVENT:
                 try {
-                    const event = JSON.parse(this.data[1]) as NostrEvent;
+                    const event = this.data[1] as NostrEvent;
                     await this.storeEvent(event);
                     return event;
                 } catch (err: any) {
-                    this.ws.sendNotice(err.message, err.stack);    
+                    this.ws.sendNotice(err.message, err.stack);
                 }
-                break;
+                return null;
             case NostrMessageType.REQUEST:
                 try {
                     const subscriptionId = this.data[1];
