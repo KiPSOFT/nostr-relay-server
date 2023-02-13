@@ -59,7 +59,7 @@ export default class Message {
                 }
                 break;
             case NostrMessageType.CLOSE:
-                this.ws.close();
+                this.ws.close(this.data[1]);
                 break;
         }
         return null;

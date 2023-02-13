@@ -56,9 +56,8 @@ export default class Socket extends EventEmitter {
         this.removeSubscription(subscriptionId);
     }
 
-    close() {
-        this.subscriptions = undefined;
-        this.ws.close();
+    close(subscriptionId: string) {
+        this.subscriptions?.delete({ subscriptionId });
     }
 
 }
