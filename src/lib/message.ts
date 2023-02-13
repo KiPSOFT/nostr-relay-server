@@ -47,12 +47,7 @@ export default class Message {
             case NostrMessageType.REQUEST:
                 try {
                     const subscriptionId = this.data[1];
-                    let filters;
-                    if (Array.isArray(this.data[2])) {
-                        filters = this.data[2] as Array<NostrFilters>;
-                    } else {
-                        filters = [ this.data[2] ] as Array<NostrFilters>;
-                    }
+                    const filters = this.data.splice(2) as Array<NostrFilters>;
                     this.ws.addSubscription(subscriptionId, filters);
                 } catch (err: any) {
                     this.ws.sendNotice(err.message, err.stack);    
