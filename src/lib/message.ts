@@ -15,9 +15,10 @@ export default class Message {
     constructor(_ws: Socket, _data: any, _logger: Logger, _db: DB) {
         this.ws = _ws;
         this.db = _db;
+        this.logger = _logger;
+        this.logger.debug(`Incoming data; ${_data}`);
         try {
             this.data = JSON.parse(_data);
-            this.logger = _logger;
         } catch (err: any) {
             this.ws.sendNotice(err.message, err.stack);
         }
