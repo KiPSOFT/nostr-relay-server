@@ -69,6 +69,7 @@ export default class DB {
                 tmp.concat(await this.db.collection('events').find(search));
             }
         }
+        console.log(tmp);
         return tmp;
     }
 

@@ -24,11 +24,10 @@ export default class Subscription {
         for (const event of events) {
             this.ws.sendEvent(event, this.subscriptionId);
         }
-        if (this.filters[0].limit) {
-            this.ws.sendEOSE(this.subscriptionId);
-        } else {
-            this.ws.on('eventReceived', this.checkEvent.bind);
+        if (!this.filters[0].limit) {
+            this.ws.on('eventReceived', this.checkEvent.bind);    
         }
+        this.ws.sendEOSE(this.subscriptionId);
     }
 
     checkEvent(event: NostrEvent) {
