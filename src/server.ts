@@ -7,8 +7,7 @@ import Socket from './lib/socket.ts';
 class Server {
     private logger: Logger;
     private db: DB;
-    private config: any;
-
+    
     constructor() {
         this.logger = new Logger();
         this.db = new DB();
@@ -24,6 +23,18 @@ class Server {
 
     reqHandler(req: Request) {
         if (req.headers.get('upgrade') !== 'websocket') {
+            if (req.headers.get('Accept') === 'application/nostr+json') {
+                return new Response(JSON.stringify({
+                    name: config.relay.name,
+                    description: config.relay.description,
+                    pubkey: config.relay.publicKey,
+                    contact: config.relay.contact,
+                    supported_nips: 'NIP-01,NIP-14,NIP-11',
+                    software: 'Nostr Deno Server by Serkan KOCAMAN',
+                    version: '0.1',
+
+                }), {status: 200});
+            }
             return new Response(null, { status: 501 });
         }
         const { socket: ws, response } = Deno.upgradeWebSocket(req);
