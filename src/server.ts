@@ -33,7 +33,14 @@ class Server {
                     software: 'Nostr Deno Server by Serkan KOCAMAN',
                     version: '0.1',
 
-                }), {status: 200});
+                }), {
+                    status: 200,
+                    headers: new Headers({
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Methods': '*'
+                    })
+                });
             }
             return new Response(null, { status: 501 });
         }
