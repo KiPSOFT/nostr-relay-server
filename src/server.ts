@@ -19,7 +19,7 @@ class Server {
         await this.logger.loader();
         await this.db.connect(this.logger);
         this.logger.debug('Listening on', config.port);
-        serve(this.reqHandler.bind, { port: config.port });
+        serve(this.reqHandler.bind(this), { port: config.port });
     }
 
     reqHandler(req: Request) {
