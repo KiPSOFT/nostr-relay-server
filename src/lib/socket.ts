@@ -9,7 +9,7 @@ export default class Socket extends EventEmitter {
     private ws: WebSocket;
     private logger: Logger;
     private db: DB;
-    private subscriptions: WeakMap<{ subscriptionId: string }, Subscription> = new WeakMap();
+    private subscriptions?: WeakMap<{ subscriptionId: string }, Subscription> = new WeakMap();
 
     constructor(_ws: WebSocket, _logger: Logger, _db: DB) {
         super();
@@ -35,7 +35,7 @@ export default class Socket extends EventEmitter {
     }
 
     removeSubscription(subscriptionId: string) {
-        this.subscriptions.delete({ subscriptionId });
+        this.subscriptions?.delete({ subscriptionId });
     }
 
     sendNotice(message: string, detail: string) {
@@ -56,5 +56,9 @@ export default class Socket extends EventEmitter {
         this.removeSubscription(subscriptionId);
     }
 
+    close() {
+        this.subscriptions = undefined;
+        this.ws.close();
+    }
 
 }
