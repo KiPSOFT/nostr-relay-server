@@ -64,12 +64,13 @@ export default class DB {
                 search.created_at = { $lt: filter.until };
             }
             if (filter.limit) {
-                tmp.concat(await this.db.collection('events').find(search).limit(filter.limit));
+                const data = await this.db.collection('events').find(search).limit(filter.limit).toArray();
+                tmp = tmp.concat(data);
             } else {
-                tmp.concat(await this.db.collection('events').find(search));
+                const data = await this.db.collection('events').find(search).toArray();
+                tmp = tmp.concat(data);
             }
         }
-        console.log(tmp);
         return tmp;
     }
 
