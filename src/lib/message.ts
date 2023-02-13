@@ -35,7 +35,7 @@ export default class Message {
         this.type = this.data[0] as NostrMessageType;
         this.logger?.debug(`Message type is ${this.data[0]}`);
         switch (this.type) {
-            case NostrMessageType.EVENT: {
+            case 'EVENT': {
                 try {
                     const event = JSON.parse(this.data[1]) as NostrEvent;
                     await this.storeEvent(event);
@@ -45,7 +45,7 @@ export default class Message {
                 }
                 break;
             }
-            case NostrMessageType.REQUEST: {
+            case 'REQ': {
                 try {
                     const subscriptionId = this.data[1];
                     const filters = JSON.parse(this.data[2]) as Array<NostrFilters>;
