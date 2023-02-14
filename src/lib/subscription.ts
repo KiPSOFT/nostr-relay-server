@@ -25,7 +25,7 @@ export default class Subscription {
             this.ws.sendEvent(event, this.subscriptionId);
         }
         if (!this.filters[0].limit) {
-            this.ws.on('eventReceived', this.checkEvent.bind);    
+            this.ws.on('eventReceived', this.checkEvent.bind(this));    
         }
         this.ws.sendEOSE(this.subscriptionId);
     }
