@@ -29,7 +29,7 @@ class Server {
                     description: config.relay.description,
                     pubkey: config.relay.publicKey,
                     contact: config.relay.contact,
-                    supported_nips: [1, 11, 14],
+                    supported_nips: [1, 4, 11, 14],
                     software: 'Nostr Deno Server by Serkan KOCAMAN',
                     version: '0.1',
 
