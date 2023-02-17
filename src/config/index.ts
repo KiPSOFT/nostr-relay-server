@@ -14,6 +14,6 @@ export default {
         description: Deno.env.get('RELAY_DESCRIPTION') || 'Nostr Relay Server on Deno - Nostrprotocol.net',
         publicKey: Deno.env.get('RELAY_PUBLICKEY') || 'npub1r25l7p70wll4wgvpf9u9xw68gs78ev6gajux95y37w9yc09hjw6sxldkdv',
         contact: Deno.env.get('RELAY_CONTACT') || 'kipsoft@nostrprotocol.net',
-        messagePerSecond: Deno.env.get('RELAY_MESSAGE_PER_SECOND') || 10
+        messagePerSecond: Deno.env.get('RELAY_MESSAGE_PER_SECOND') || '10'
     }
 };

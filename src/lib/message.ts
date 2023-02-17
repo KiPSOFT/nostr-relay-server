@@ -39,7 +39,7 @@ export default class Message {
             case NostrMessageType.EVENT:
                 try {
                     const event = this.data[1] as NostrEvent;
-                    this.checkMessagePerSecond(event);
+                    this.checkMessageRules(event);
                     await this.storeEvent(event);
                     return event;
                 } catch (err: any) {
@@ -62,12 +62,12 @@ export default class Message {
         return null;
     }
 
-    checkMessagePerSecond(event: NostrEvent) {
+    checkMessageRules(event: NostrEvent) {
         if (!this.ws.lastEvent) {
             return;
         }
-        const messagePerSecondLimit = config.relay.messagePerSecond as number;
-        const correctTime = (Math.floor(this.ws.lastEvent.created_at / 1000) + (messagePerSecondLimit)) * 1000;
+        const messagePerSecondLimit = parseInt(config.relay.messagePerSecond);
+        const correctTime = parseInt(this.ws.lastEvent.created_at.toString()) + messagePerSecondLimit;
         if (event.created_at < correctTime) {
             // For bot checking. May be need a remove this line.
             this.ws.lastEvent = event;
