@@ -67,7 +67,7 @@ export default class Message {
             return;
         }
         const messagePerSecondLimit = config.relay.messagePerSecond as number;
-        const correctTime = Math.floor(this.ws.lastEvent.created_at / 1000) + (messagePerSecondLimit);
+        const correctTime = (Math.floor(this.ws.lastEvent.created_at / 1000) + (messagePerSecondLimit)) * 1000;
         if (event.created_at < correctTime) {
             // For bot checking. May be need a remove this line.
             this.ws.lastEvent = event;
