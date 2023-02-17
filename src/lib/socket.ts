@@ -11,6 +11,7 @@ export default class Socket extends EventEmitter {
     private db: DB;
     private subscriptions?: WeakMap<{ subscriptionId: string }, Subscription> = new WeakMap();
     public lastEvent?: NostrEvent;
+    public floodMessageCounter = 0;
 
     constructor(_ws: WebSocket, _logger: Logger, _db: DB) {
         super();
@@ -59,6 +60,10 @@ export default class Socket extends EventEmitter {
 
     close(subscriptionId: string) {
         this.subscriptions?.delete({ subscriptionId });
+    }
+
+    disconnect() {
+        this.ws.close();
     }
 
 }

@@ -66,14 +66,21 @@ export default class Message {
         if (!this.ws.lastEvent) {
             return;
         }
+        if (this.ws.floodMessageCounter === 9) {
+            this.logger?.debug('Flood message limit is reached.');
+            this.ws.disconnect();
+            return;
+        }
         const messagePerSecondLimit = parseInt(config.relay.messagePerSecond);
         const correctTime = parseInt(this.ws.lastEvent.created_at.toString()) + messagePerSecondLimit;
         if (event.created_at < correctTime) {
             // For bot checking. May be need a remove this line.
             this.ws.lastEvent = event;
+            this.ws.floodMessageCounter += 1;
             throw new Error(`You must send the message after ${messagePerSecondLimit} seconds later.`);
         }
         if (this.ws.lastEvent.sig === event.sig || this.ws.lastEvent.content === event.content) {
+            this.ws.floodMessageCounter += 1;
             throw new Error(`Flood messages are not accepted.`);
         }
     }
@@ -88,6 +95,7 @@ export default class Message {
         this.db.createEvent(event);
         this.ws.sendOk(event.id);
         this.ws.lastEvent = event;
+        this.ws.floodMessageCounter = 0;
         this.ws.emit('Event', event);
     }
 
