@@ -39,9 +39,10 @@ export default class Message {
             case NostrMessageType.EVENT:
                 try {
                     const event = this.data[1] as NostrEvent;
-                    this.checkMessageRules(event);
-                    await this.storeEvent(event);
-                    return event;
+                    if (this.checkMessageRules(event)) {
+                        await this.storeEvent(event);
+                        return event;
+                    }
                 } catch (err: any) {
                     this.ws.sendNotice(err.message, err.stack);
                 }
@@ -69,7 +70,7 @@ export default class Message {
         if (this.ws.floodMessageCounter === 9) {
             this.logger?.debug('Flood message limit is reached.');
             this.ws.disconnect();
-            return;
+            return false;
         }
         const messagePerSecondLimit = parseInt(config.relay.messagePerSecond);
         const correctTime = parseInt(this.ws.lastEvent.created_at.toString()) + messagePerSecondLimit;
@@ -81,6 +82,7 @@ export default class Message {
             this.ws.floodMessageCounter += 1;
             throw new Error(`Flood messages are not accepted.`);
         }
+        return true;
     }
 
     async storeEvent(event: NostrEvent) {
