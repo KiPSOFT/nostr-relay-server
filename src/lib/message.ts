@@ -1,3 +1,4 @@
+import config from '../config/index.ts';
 import { NostrMessageType } from '../interfaces/enums.ts';
 import { NostrEvent, NostrFilters } from '../interfaces/messages.ts';
 import Logger from './log.ts';
@@ -38,6 +39,7 @@ export default class Message {
             case NostrMessageType.EVENT:
                 try {
                     const event = this.data[1] as NostrEvent;
+                    this.checkMessagePerSecond(event);
                     await this.storeEvent(event);
                     return event;
                 } catch (err: any) {
@@ -60,6 +62,22 @@ export default class Message {
         return null;
     }
 
+    checkMessagePerSecond(event: NostrEvent) {
+        if (!this.ws.lastEvent) {
+            return;
+        }
+        const messagePerSecondLimit = config.relay.messagePerSecond as number;
+        const correctTime = Math.floor(this.ws.lastEvent.created_at / 1000) + (messagePerSecondLimit);
+        if (event.created_at < correctTime) {
+            // For bot checking. May be need a remove this line.
+            this.ws.lastEvent = event;
+            throw new Error(`You must send the message after ${messagePerSecondLimit} seconds later.`);
+        }
+        if (this.ws.lastEvent.sig === event.sig || this.ws.lastEvent.content === event.content) {
+            throw new Error(`Flood messages are not accepted.`);
+        }
+    }
+
     async storeEvent(event: NostrEvent) {
         if (!event) {
             return;
@@ -69,6 +87,7 @@ export default class Message {
         }
         this.db.createEvent(event);
         this.ws.sendOk(event.id);
+        this.ws.lastEvent = event;
         this.ws.emit('Event', event);
     }
 

@@ -10,6 +10,7 @@ export default class Socket extends EventEmitter {
     private logger: Logger;
     private db: DB;
     private subscriptions?: WeakMap<{ subscriptionId: string }, Subscription> = new WeakMap();
+    public lastEvent?: NostrEvent;
 
     constructor(_ws: WebSocket, _logger: Logger, _db: DB) {
         super();
