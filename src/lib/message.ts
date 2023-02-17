@@ -50,7 +50,25 @@ export default class Message {
             case NostrMessageType.REQUEST:
                 try {
                     const subscriptionId = this.data[1];
-                    const filters = this.data.splice(2) as Array<NostrFilters>;
+                    const data = this.data.splice(2);
+                    const filters: Array<NostrFilters> = [];
+                    for (const filter of data) {
+                        const tmp: any = {};
+                        for (const key in filter) {
+                            if (key.substring(0, 1) === '#') {
+                                if (!tmp.tags) {
+                                    tmp.tags = [];
+                                }
+                                tmp.tags.push({
+                                    tagName: key.substring(1),
+                                    value: filter[key]
+                                });
+                            } else {
+                                tmp[key] = filter[key];
+                            }
+                        }
+                        filters.push(tmp as NostrFilters);
+                    }
                     this.ws.addSubscription(subscriptionId, filters);
                 } catch (err: any) {
                     this.ws.sendNotice(err.message, err.stack);    
@@ -74,7 +92,7 @@ export default class Message {
         }
         const messagePerSecondLimit = parseInt(config.relay.messagePerSecond);
         const correctTime = parseInt(this.ws.lastEvent.created_at.toString()) + messagePerSecondLimit;
-        if (event.created_at < correctTime) {
+        if (event.created_at < correctTime || event.created_at === this.ws.lastEvent.created_at) {
             this.ws.floodMessageCounter += 1;
             throw new Error(`You must send the message after ${messagePerSecondLimit} seconds later.`);
         }

@@ -1,11 +1,15 @@
 import { NostrKind } from "./enums.ts";
 
+export interface NostrTag {
+    tagName: string;
+    value: string;
+}
+
 export interface NostrFilters {
     ids?: Array<string>;
     authors?: Array<string>;
     kinds?: Array<NostrKind>;
-    "#e"?: Array<string>;
-    "#p"?: Array<string>;
+    tags?: Array<NostrTag>;
     since?: number;
     until?: number;
     limit?: number;

@@ -9,7 +9,7 @@ export default class Socket extends EventEmitter {
     private ws: WebSocket;
     private logger: Logger;
     private db: DB;
-    private subscriptions?: WeakMap<{ subscriptionId: string }, Subscription> = new WeakMap();
+    private subscriptions?: Map<string, Subscription> = new Map();
     public lastEvent?: NostrEvent;
     public floodMessageCounter = 0;
 
@@ -33,11 +33,11 @@ export default class Socket extends EventEmitter {
     }
 
     addSubscription(subscriptionId: string, filters: Array<NostrFilters>) {
-        this.subscriptions?.set({ subscriptionId }, new Subscription(subscriptionId, filters, this.logger, this.db, this));
+        this.subscriptions?.set(subscriptionId, new Subscription(subscriptionId, filters, this.logger, this.db, this));
     }
 
     removeSubscription(subscriptionId: string) {
-        this.subscriptions?.delete({ subscriptionId });
+        this.subscriptions?.delete(subscriptionId);
     }
 
     sendNotice(message: string, detail: string) {
@@ -54,15 +54,18 @@ export default class Socket extends EventEmitter {
     }
 
     sendEOSE(subscriptionId: string) {
-        this.ws.send(JSON.stringify(['EOSE', subscriptionId]));
-        this.removeSubscription(subscriptionId);
+        if (this.ws.readyState === 1) {
+            this.ws.send(JSON.stringify(['EOSE', subscriptionId]));
+            this.removeSubscription(subscriptionId);
+        }
     }
 
     close(subscriptionId: string) {
-        this.subscriptions?.delete({ subscriptionId });
+        this.subscriptions?.delete(subscriptionId);
     }
 
     disconnect() {
+        this.subscriptions?.clear();
         this.ws.close();
     }
 

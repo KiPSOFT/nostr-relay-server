@@ -39,19 +39,10 @@ export default class DB {
                     $in: filter.kinds
                 };
             }
-            if (filter['#e']) {
+            if (filter.tags) {
                 const tmp = [];
-                for (const e of filter['#e']) {
-                    tmp.push(['e', e]);
-                }
-                search.tags = {
-                    $in: tmp
-                };
-            }
-            if (filter['#p']) {
-                const tmp = [];
-                for (const p of filter['#p']) {
-                    tmp.push(['p', p]);
+                for (const tag of filter.tags) {
+                    tmp.push([tag.tagName, tag.value]);
                 }
                 search.tags = {
                     $in: tmp
@@ -63,6 +54,7 @@ export default class DB {
             if (filter.until) {
                 search.created_at = { $lt: filter.until };
             }
+            console.log('Query', search);
             if (filter.limit) {
                 const data = await this.db.collection('events').find(search).limit(filter.limit).toArray();
                 tmp = tmp.concat(data);
