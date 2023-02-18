@@ -96,7 +96,7 @@ export default class Message {
             this.ws.floodMessageCounter += 1;
             throw new Error(`You must send the message after ${messagePerSecondLimit} seconds later.`);
         }
-        if (this.ws.lastEvent.sig === event.sig || this.ws.lastEvent.content === event.content) {
+        if (this.ws.lastEvent.sig === event.sig) {
             this.ws.floodMessageCounter += 1;
             throw new Error(`Flood messages are not accepted.`);
         }
