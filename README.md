@@ -6,7 +6,7 @@ Live address; [wss://relay.nostrprotocol.net](wss://relay.nostrprotocol.net)
 
 ## Supported NIPs ##
 
-NIP-01, NIP-04, NIP-11, NIP-14  
+NIP-01, NIP-04, NIP-11, NIP-12, NIP-14  
 
 ## Requirements
 

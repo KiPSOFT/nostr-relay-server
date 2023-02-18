@@ -41,16 +41,22 @@ export default class Socket extends EventEmitter {
     }
 
     sendNotice(message: string, detail: string) {
-        this.logger?.debug(`Error ${message} ${detail}`);
-        this.ws.send(JSON.stringify(['NOTICE', message]));
+        if (this.ws.readyState === 1) {
+            this.logger?.debug(`Error ${message} ${detail}`);
+            this.ws.send(JSON.stringify(['NOTICE', message]));
+        }
     }
 
     sendOk(id: string) {
-        this.ws.send(JSON.stringify(['OK', id]));
+        if (this.ws.readyState === 1) {
+            this.ws.send(JSON.stringify(['OK', id]));
+        }
     }
 
     sendEvent(event: NostrEvent, subscriptionId: string) {
-        this.ws.send(JSON.stringify(['EVENT', subscriptionId, event]));
+        if (this.ws.readyState === 1) {
+            this.ws.send(JSON.stringify(['EVENT', subscriptionId, event]));
+        }
     }
 
     sendEOSE(subscriptionId: string) {
