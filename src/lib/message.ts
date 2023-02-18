@@ -83,7 +83,7 @@ export default class Message {
 
     checkMessageRules(event: NostrEvent) {
         if (!this.ws.lastEvent) {
-            return;
+            return true;
         }
         if (this.ws.floodMessageCounter === 9) {
             this.logger?.debug('Flood message limit is reached.');
