@@ -92,7 +92,7 @@ export default class Message {
         }
         const messagePerSecondLimit = parseInt(config.relay.messagePerSecond);
         const correctTime = parseInt(this.ws.lastEvent.created_at.toString()) + messagePerSecondLimit;
-        if (event.created_at < correctTime || event.created_at === this.ws.lastEvent.created_at) {
+        if (event.pubkey === this.ws.lastEvent.pubkey && (event.created_at < correctTime || event.created_at === this.ws.lastEvent.created_at)) {
             this.ws.floodMessageCounter += 1;
             throw new Error(`You must send the message after ${messagePerSecondLimit} seconds later.`);
         }
