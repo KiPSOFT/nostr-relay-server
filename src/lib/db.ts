@@ -54,7 +54,6 @@ export default class DB {
             if (filter.until) {
                 search.created_at = { $lt: filter.until };
             }
-            console.log('Query', JSON.stringify(search, null, 2));
             if (filter.limit) {
                 const data = await this.db.collection('events').find(search).limit(filter.limit).toArray();
                 tmp = tmp.concat(data);
