@@ -51,13 +51,31 @@ export default class DB {
                 };
             }
             if (filter.tags) {
-                const tmp = [];
-                for (const tag of filter.tags) {
-                    tmp.push([tag.tagName, tag.value]);
-                }
-                search.tags = {
-                    $in: tmp
+                search.$and = [];
+                const tmp = {
+                    $and: [] as any
                 };
+                for (const tag of filter.tags) {
+                    tmp.$and.push({
+                        tags: {
+                            $elemMatch: {
+                                $elemMatch: {
+                                    $in: [tag.tagName]
+                                }
+                            }
+                        }
+                    });
+                    tmp.$and.push({
+                        tags: {
+                            $elemMatch: {
+                                $elemMatch: {
+                                    $in: [tag.value]
+                                }
+                            }
+                        }
+                    });
+                }
+                search.$and.push(tmp);
             }
             if (filter.since) {
                 search.created_at = { $gt: filter.since };
