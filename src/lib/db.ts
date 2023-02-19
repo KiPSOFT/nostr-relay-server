@@ -25,6 +25,7 @@ export default class DB {
 
     async close() {
         this.client?.close();
+        this.logger?.debug('DB disconnected.');
     }
 
     async getEvents(filters: Array<NostrFilters>) {

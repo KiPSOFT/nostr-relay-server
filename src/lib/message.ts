@@ -9,14 +9,16 @@ import DB from './db.ts';
 export default class Message {
     private ws: Socket;
     private data: Array<any> = [];
-    private logger: Logger|undefined;
+    private logger: Logger;
     private type: NostrMessageType|undefined;
     private db: DB;
     
-    constructor(_ws: Socket, _data: any, _logger: Logger, _db: DB) {
+    constructor(_ws: Socket, _data: any, _logger: Logger) {
         this.ws = _ws;
-        this.db = _db;
         this.logger = _logger;
+        this.db = new DB();
+        this.db.onConnect = () => {
+        };
         this.logger.debug(`Incoming data; ${_data}`);
         try {
             this.data = JSON.parse(_data);
@@ -110,7 +112,9 @@ export default class Message {
         if (!this.isValidEvent(event)) {
             return this.ws.sendNotice('Event sign is incorrect.', 'Event sign is incorrect.');
         }
+        await this.db.connect(this.logger);
         this.db.createEvent(event);
+        await this.db.close();
         this.ws.sendOk(event.id);
         this.ws.lastEvent = event;
         this.ws.floodMessageCounter = 0;

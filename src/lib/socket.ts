@@ -1,14 +1,13 @@
 import EventEmitter from "https://deno.land/x/events@v1.0.0/mod.ts";
 import Logger from './log.ts';
-import DB from './db.ts';
 import Message from './message.ts';
 import { NostrEvent, NostrFilters } from '../interfaces/messages.ts';
 import Subscription from "./subscription.ts";
+import DB from "./db.ts";
 
 export default class Socket extends EventEmitter {
     private ws: WebSocket;
     private logger: Logger;
-    private db: DB;
     private subscriptions?: Map<string, Subscription> = new Map();
     public lastEvent?: NostrEvent;
     public floodMessageCounter = 0;
@@ -17,19 +16,13 @@ export default class Socket extends EventEmitter {
         super();
         this.ws = _ws;
         this.logger = _logger;
-        this.db = new DB();
-        this.db.onConnect = () => {
+        this.ws.onmessage = async (m) => {
+            const msg = new Message(this, m.data, this.logger);
+            const event = await msg.parse();
+            if (event) {
+                this.emit('eventReceived', event);
+            }
         };
-        this.ws.onmessage = (m) => {
-            setTimeout(async () => {
-                const msg = new Message(this, m.data, this.logger, this.db);
-                const event = await msg.parse();
-                if (event) {
-                    this.emit('eventReceived', event);
-                }
-            }, 1500);
-        };
-        this.db.connect(this.logger);
         this.ws.onclose = () => this.logger.debug('Disconnected from client ...');
     }
 
@@ -38,7 +31,7 @@ export default class Socket extends EventEmitter {
     }
 
     addSubscription(subscriptionId: string, filters: Array<NostrFilters>) {
-        this.subscriptions?.set(subscriptionId, new Subscription(subscriptionId, filters, this.logger, this.db, this));
+        this.subscriptions?.set(subscriptionId, new Subscription(subscriptionId, filters, this.logger, this));
     }
 
     removeSubscription(subscriptionId: string) {
@@ -78,7 +71,6 @@ export default class Socket extends EventEmitter {
     disconnect() {
         this.subscriptions?.clear();
         this.ws.close();
-        this.db.close();
     }
 
 }

@@ -10,9 +10,11 @@ export default class Subscription {
     private filters: Array<NostrFilters>;
     private ws: Socket;
 
-    constructor(_subscriptionId: string, _filters: Array<NostrFilters>, _logger: Logger, _db: DB, _ws: Socket) {
+    constructor(_subscriptionId: string, _filters: Array<NostrFilters>, _logger: Logger, _ws: Socket) {
         this.logger = _logger;
-        this.db = _db;
+        this.db = new DB();
+        this.db.onConnect = () => {
+        };
         this.subscriptionId = _subscriptionId;
         this.filters = _filters;
         this.ws = _ws;
@@ -21,7 +23,9 @@ export default class Subscription {
 
     async getEvents() {
         try {
+            await this.db.connect(this.logger);
             const events = await this.db.getEvents(this.filters);
+            await this.db.close();
             for (const event of events) {
                 this.ws.sendEvent(event, this.subscriptionId);
             }
