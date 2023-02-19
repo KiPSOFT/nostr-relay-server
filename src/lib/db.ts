@@ -20,7 +20,7 @@ export default class DB {
     }
 
     async createEvent(event: NostrEvent) {
-        return await this.db.collection('events').insertOne(event);
+        await this.db.collection('events').insertOne(event);
     }
 
     async close() {

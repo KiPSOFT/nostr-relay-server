@@ -113,7 +113,7 @@ export default class Message {
             return this.ws.sendNotice('Event sign is incorrect.', 'Event sign is incorrect.');
         }
         await this.db.connect(this.logger);
-        this.db.createEvent(event);
+        await this.db.createEvent(event);
         await this.db.close();
         this.ws.sendOk(event.id);
         this.ws.lastEvent = event;
