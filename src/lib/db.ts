@@ -26,6 +26,9 @@ export default class DB {
     }
 
     async getEvents(filters: Array<NostrFilters>) {
+        if (!this.db) {
+            throw new Error('Internal error.');
+        }
         let tmp: Array<any> = [];
         for (const filter of filters) {
             const search = { } as any;

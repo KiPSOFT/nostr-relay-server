@@ -20,14 +20,18 @@ export default class Subscription {
     }
 
     async getEvents() {
-        const events = await this.db.getEvents(this.filters);
-        for (const event of events) {
-            this.ws.sendEvent(event, this.subscriptionId);
+        try {
+            const events = await this.db.getEvents(this.filters);
+            for (const event of events) {
+                this.ws.sendEvent(event, this.subscriptionId);
+            }
+            if (!this.filters[0].limit) {
+                this.ws.on('eventReceived', this.checkEvent.bind(this));    
+            }
+            this.ws.sendEOSE(this.subscriptionId);
+        } catch (err) {
+            this.ws.sendNotice(err.message, err.stack);
         }
-        if (!this.filters[0].limit) {
-            this.ws.on('eventReceived', this.checkEvent.bind(this));    
-        }
-        this.ws.sendEOSE(this.subscriptionId);
     }
 
     checkEvent(event: NostrEvent) {
