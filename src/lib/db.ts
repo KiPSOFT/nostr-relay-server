@@ -6,18 +6,23 @@ import Logger from './log.ts';
 export default class DB {
     public db: any;
     private logger?: Logger;
+    private client?: MongoClient;
 
     async connect(_logger: Logger) {
         const mongoDBUri = `mongodb+srv://${config.mongo.userName}:${config.mongo.password}@${config.mongo.host}/${config.mongo.db}${config.mongo.options}`;
         this.logger = _logger;
         this.logger.debug(`DB Connecting to; ${mongoDBUri} `);
-        const client = new MongoClient();
-        await client.connect(mongoDBUri);
-        this.db = client.database(config.mongo.db);
+        this.client = new MongoClient();
+        await this.client.connect(mongoDBUri);
+        this.db = this.client.database(config.mongo.db);
     }
 
     async createEvent(event: NostrEvent) {
         return await this.db.collection('events').insertOne(event);
+    }
+
+    async close() {
+        this.client?.close();
     }
 
     async getEvents(filters: Array<NostrFilters>) {

@@ -13,11 +13,12 @@ export default class Socket extends EventEmitter {
     public lastEvent?: NostrEvent;
     public floodMessageCounter = 0;
 
-    constructor(_ws: WebSocket, _logger: Logger, _db: DB) {
+    constructor(_ws: WebSocket, _logger: Logger) {
         super();
         this.ws = _ws;
         this.logger = _logger;
-        this.db = _db;
+        this.db = new DB();
+        this.db.connect(this.logger);
         this.ws.onmessage = async (m) => {
             const msg = new Message(this, m.data, this.logger, this.db);
             const event = await msg.parse();
@@ -73,6 +74,7 @@ export default class Socket extends EventEmitter {
     disconnect() {
         this.subscriptions?.clear();
         this.ws.close();
+        this.db.close();
     }
 
 }

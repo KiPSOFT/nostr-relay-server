@@ -6,17 +6,14 @@ import Socket from './lib/socket.ts';
 
 class Server {
     private logger: Logger;
-    private db: DB;
     
     constructor() {
         this.logger = new Logger();
-        this.db = new DB();
         this.init();
     }
 
     async init() {
         await this.logger.loader();
-        await this.db.connect(this.logger);
         this.logger.debug('Listening on', config.port);
         serve(this.reqHandler.bind(this), { port: config.port });
     }
@@ -45,7 +42,7 @@ class Server {
             return new Response(null, { status: 501 });
         }
         const { socket: ws, response } = Deno.upgradeWebSocket(req);
-        new Socket(ws, this.logger, this.db);
+        new Socket(ws, this.logger);
         return response;
     }
 }
