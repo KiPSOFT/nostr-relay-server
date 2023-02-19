@@ -61,7 +61,7 @@ export default class Message {
                                 }
                                 tmp.tags.push({
                                     tagName: key.substring(1),
-                                    value: filter[key]
+                                    value: filter[key][0]
                                 });
                             } else {
                                 tmp[key] = filter[key];
