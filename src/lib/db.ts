@@ -4,6 +4,7 @@ import { NostrEvent, NostrFilters } from '../interfaces/messages.ts';
 import Logger from './log.ts';
 
 export default class DB {
+    public onConnect: any;
     public db: any;
     private logger?: Logger;
     private client?: MongoClient;
@@ -14,6 +15,7 @@ export default class DB {
         this.logger.debug(`DB Connecting to; ${mongoDBUri} `);
         this.client = new MongoClient();
         await this.client.connect(mongoDBUri);
+        this.onConnect();
         this.db = this.client.database(config.mongo.db);
     }
 
