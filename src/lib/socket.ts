@@ -19,13 +19,15 @@ export default class Socket extends EventEmitter {
         this.logger = _logger;
         this.db = new DB();
         this.db.onConnect = () => {
-            this.ws.onmessage = async (m) => {
+        };
+        this.ws.onmessage = (m) => {
+            setTimeout(async () => {
                 const msg = new Message(this, m.data, this.logger, this.db);
                 const event = await msg.parse();
                 if (event) {
                     this.emit('eventReceived', event);
                 }
-            };
+            }, 1500);
         };
         this.db.connect(this.logger);
         this.ws.onclose = () => this.logger.debug('Disconnected from client ...');
