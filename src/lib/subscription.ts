@@ -29,9 +29,12 @@ export default class Subscription {
             for (const event of events) {
                 this.ws.sendEvent(event, this.subscriptionId);
             }
+            /** Removed from now //FIXME */
+            /*
             if (!this.filters[0].limit) {
                 this.ws.on('eventReceived', this.checkEvent.bind(this));    
             }
+            */
             this.ws.sendEOSE(this.subscriptionId);
         } catch (err) {
             this.ws.sendNotice(err.message, err.stack);
