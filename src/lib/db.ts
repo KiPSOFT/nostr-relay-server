@@ -9,14 +9,14 @@ export default class DB {
     private logger?: Logger;
     private client?: MongoClient;
 
-    async connect(_logger: Logger) {
+    async connect(_logger: Logger, dbName: string = config.mongo.db) {
         const mongoDBUri = `mongodb+srv://${config.mongo.userName}:${config.mongo.password}@${config.mongo.host}/${config.mongo.db}${config.mongo.options}`;
         this.logger = _logger;
         this.logger.debug(`DB Connecting to; ${mongoDBUri} `);
         this.client = new MongoClient();
         await this.client.connect(mongoDBUri);
         this.onConnect();
-        this.db = this.client.database(config.mongo.db);
+        this.db = this.client.database(dbName);
     }
 
     async createEvent(event: NostrEvent) {
@@ -26,6 +26,13 @@ export default class DB {
     async close() {
         this.client?.close();
         this.logger?.debug('DB disconnected.');
+    }
+
+    async findUsers(event: NostrEvent) {
+        const search: any = {};
+        search[config.registerCheck.field] = event.pubkey;
+        const usr = await this.db.collection(config.registerCheck.collection).find(search).toArray();
+        return usr.length > 0;
     }
 
     async getEvents(filters: Array<NostrFilters>) {

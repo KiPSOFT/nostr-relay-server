@@ -12,11 +12,15 @@ export default class Message {
     private logger: Logger;
     private type: NostrMessageType|undefined;
     private db: DB;
+    private registeredDb: DB;
     
     constructor(_ws: Socket, _data: any, _logger: Logger) {
         this.ws = _ws;
         this.logger = _logger;
         this.db = new DB();
+        this.registeredDb = new DB();
+        this.registeredDb.onConnect = () => {
+        };
         this.db.onConnect = () => {
         };
         this.logger.debug(`Incoming data; ${_data}`);
@@ -41,12 +45,13 @@ export default class Message {
             case NostrMessageType.EVENT:
                 try {
                     const event = this.data[1] as NostrEvent;
-                    if (this.checkMessageRules(event)) {
+                    if (this.checkMessageRules(event) && await this.checkRegisteredUser(event)) {
                         await this.storeEvent(event);
                         return event;
                     }
                 } catch (err: any) {
                     this.ws.sendNotice(err.message, err.stack);
+                    this.ws.disconnect();
                 }
                 return null;
             case NostrMessageType.REQUEST:
@@ -81,6 +86,18 @@ export default class Message {
                 break;
         }
         return null;
+    }
+
+    async checkRegisteredUser(event: NostrEvent) {
+        if (config.onlyRegisteredUser === 'on') {
+            await this.registeredDb.connect(this.logger, config.registerCheck.database);
+            const res = await this.registeredDb.findUsers(event);
+            await this.registeredDb.close();
+            if (!res) {
+                throw new Error('Restrict access.');
+            }
+        }
+        return true;
     }
 
     checkMessageRules(event: NostrEvent) {

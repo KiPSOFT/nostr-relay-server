@@ -15,5 +15,11 @@ export default {
         publicKey: Deno.env.get('RELAY_PUBLICKEY') || 'npub1r25l7p70wll4wgvpf9u9xw68gs78ev6gajux95y37w9yc09hjw6sxldkdv',
         contact: Deno.env.get('RELAY_CONTACT') || 'kipsoft@nostrprotocol.net',
         messagePerSecond: Deno.env.get('RELAY_MESSAGE_PER_SECOND') || '10'
+    },
+    onlyRegisteredUser: Deno.env.get('ONLY_REGISTERED_USER') || 'off',
+    registerCheck: {
+        database: Deno.env.get('REGISTERED_DB') || '',
+        collection: Deno.env.get('REGISTERED_COLLECTION') || '',
+        field: Deno.env.get('REGISTERED_FIELD') || 'publicKey'
     }
 };
